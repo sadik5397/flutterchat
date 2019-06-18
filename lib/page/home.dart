@@ -6,6 +6,7 @@ import 'chats.dart';
 import 'status.dart';
 import 'calls.dart';
 
+// ignore: must_be_immutable
 class FlutterChat extends StatefulWidget {
   var cameras;
 

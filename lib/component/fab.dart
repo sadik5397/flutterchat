@@ -7,4 +7,8 @@ FloatingActionButton fab = FloatingActionButton(
     Icons.message,
     color: Colors.white,
   ),
+//  child: AnimatedIcon(
+//  progress: null,
+//    icon: AnimatedIcons.pause_play,
+//  ),
 );

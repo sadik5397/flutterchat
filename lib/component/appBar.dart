@@ -103,10 +103,6 @@ AppBar chatAppBar(String title, String image, String onlineMin) {
         icon: Icon(Icons.phone),
         onPressed: () {},
       ),
-      IconButton(
-        icon: Icon(Icons.more_vert),
-        onPressed: () {},
-      ),
     ],
   );
 }
