@@ -1,11 +1,8 @@
 import 'package:flutter/material.dart';
 import 'page/home.dart';
-import 'package:camera/camera.dart';
-
-List<CameraDescription> cameras;
+import 'page/login.dart';
 
 Future<Null> main() async {
-  cameras = await availableCameras();
   runApp(new MyApp());
 }
 
@@ -19,7 +16,8 @@ class MyApp extends StatelessWidget {
         primaryColor: Colors.teal.shade700,
         accentColor: Colors.teal.shade200,
       ), // ThemeData
-      home: FlutterChat(cameras),
+//      home: FlutterChat(),
+      home: Login(),
     ); //MaterialApp
   }
 }

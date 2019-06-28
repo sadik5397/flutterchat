@@ -1,17 +1,12 @@
 import 'package:flutter/material.dart';
 import '../component/appBar.dart';
 import '../component/fab.dart';
-import 'camera.dart';
 import 'chats.dart';
 import 'status.dart';
 import 'calls.dart';
 
 // ignore: must_be_immutable
 class FlutterChat extends StatefulWidget {
-  var cameras;
-
-  FlutterChat(this.cameras);
-
   @override
   _FlutterChatState createState() => _FlutterChatState();
 }
@@ -25,7 +20,7 @@ class _FlutterChatState extends State<FlutterChat>
     // TODO: implement initState
     super.initState();
     tabController = TabController(
-      length: 4,
+      length: 3,
       vsync: this,
       initialIndex: 1,
     );
@@ -39,7 +34,6 @@ class _FlutterChatState extends State<FlutterChat>
       body: TabBarView(
         controller: tabController,
         children: <Widget>[
-          Camera(widget.cameras),
           Chats(),
           Status(),
           Calls(),

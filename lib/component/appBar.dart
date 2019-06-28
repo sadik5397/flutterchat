@@ -35,28 +35,16 @@ AppBar homeAppBar(String title, TabController homeTabController, double width) {
       controller: homeTabController,
       indicatorColor: Colors.white,
       indicatorSize: TabBarIndicatorSize.label,
-      isScrollable: true,
       tabs: <Widget>[
         Container(
-          width: width * .1 * .6,
-          height: height,
-          alignment: Alignment.center,
-          child: Icon(
-            Icons.camera_alt,
-          ),
-        ),
-        Container(
-            width: width * .3 * .65,
             height: height,
             alignment: Alignment.center,
             child: Text("CHATS")),
         Container(
-            width: width * .3 * .65,
             height: height,
             alignment: Alignment.center,
             child: Text("STATUS")),
         Container(
-            width: width * .3 * .65,
             height: height,
             alignment: Alignment.center,
             child: Text("CALLS"))

@@ -5,10 +5,6 @@ import 'package:camera/camera.dart';
 class Camera extends StatefulWidget {
   List<CameraDescription> cameras;
 
-  Camera(
-    this.cameras,
-  );
-
   @override
   _CameraState createState() => _CameraState();
 }

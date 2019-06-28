@@ -27,6 +27,10 @@ dependencies:
   timeago: ^2.0.10
   camera:
   flare_flutter: ^1.5.2
+  image_picker:
+  google_sign_in:
+  firebase_core:
+  firebase_auth:
 
 dev_dependencies:
   flutter_test:
@@ -73,3 +77,4 @@ flutter:
   #
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/custom-fonts/#from-packages
+

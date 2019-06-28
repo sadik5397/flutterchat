@@ -5,6 +5,9 @@ import 'package:flutterchat/model/fireConversationModel.dart';
 import 'package:firebase_database/ui/firebase_animated_list.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:timeago/timeago.dart' as timeAgo;
+import 'package:image_picker/image_picker.dart';
+import 'dart:async';
+import 'dart:io';
 
 class Conversation extends StatefulWidget {
   final String name;
@@ -28,6 +31,44 @@ class _ConversationState extends State<Conversation> {
   List<ConversationModel> conversationList = <ConversationModel>[];
   BuildContext context;
 
+  void insertConversationModel() {
+    final FormState formState = conversationKey.currentState;
+    if (formState.validate()) {
+      formState.save();
+      formState.reset();
+      conversationModel.time = DateTime.now().millisecondsSinceEpoch.toString();
+      conversationModel.to = "${widget.name}";
+      conversationModel.from = "${widget.user}";
+      ConversationService conversationService =
+          ConversationService(conversationModel.toMap());
+      conversationService.addConversation();
+    }
+  }
+
+  void childAdded(Event event) {
+    setState(() {
+      conversationList.add(ConversationModel.fromSnapshot(event.snapshot));
+    });
+  }
+
+  File image;
+
+  Future getImage() async {
+    File picture = await ImagePicker.pickImage(source: ImageSource.camera);
+    setState(() {
+      image = picture;
+    });
+    conversationModel.thread = image.toString();
+  }
+
+  Future pickImage() async {
+    File picture = await ImagePicker.pickImage(source: ImageSource.gallery);
+    setState(() {
+      image = picture;
+    });
+    conversationModel.thread = image.toString();
+  }
+
   @override
   // ignore: must_call_super
   void initState() {
@@ -48,20 +89,30 @@ class _ConversationState extends State<Conversation> {
               child: FirebaseAnimatedList(
                 query: database.reference().child(nodeName),
                 reverse: false,
-//                sort: conversationList.time,
+                scrollDirection: Axis.vertical,
+                physics: BouncingScrollPhysics(),
                 itemBuilder: (_, DataSnapshot snap, Animation<double> animation, int index) {
-                  if(conversationList[index].from == widget.user && conversationList[index].to == widget.name){
-                    return sendChat("${conversationList[index].thread}", "${timeAgo.format(DateTime.fromMillisecondsSinceEpoch(int.parse(conversationList[index].time),),locale: "en_short")}");
-                  }else
-//                    if(conversationList[index].to == "S.a. Sadik" && conversationList[index].from == "rtrjhnsdfn")
+                  print("Here is the response for ${widget.name}:\nArray Length is ${conversationList.length}\nfrom : ${widget.user} || to : ${widget.name}");
+                  if(conversationList.length!=0)
+                  {
+                    if (conversationList[index].from == widget.user && conversationList[index].to == widget.name)
                     {
-                    return receiveChat("${conversationList[index].thread}", "${timeAgo.format(DateTime.fromMillisecondsSinceEpoch(int.parse(conversationList[index].time),),locale: "en_short")}");
+                      print("if printed");
+                      return sendChat(conversationList[index].thread, "${timeAgo.format(DateTime.fromMillisecondsSinceEpoch(int.parse(conversationList[index].time),), locale: "en_short")}+ ${conversationList[index].to}");
+                    }
+                    else if (conversationList[index].from == widget.name && conversationList[index].to == widget.user)
+                    {
+                      print("elsif printed");
+                      return receiveChat(conversationList[index].thread, "${timeAgo.format(DateTime.fromMillisecondsSinceEpoch(int.parse(conversationList[index].time),), locale: "en_short")}+ ${conversationList[index].to}");
+                    }
                   }
-//                  else{}
+                  else
+                    {
+                      print("else printed");
+                    }
                 },
-              )
-
               ),
+            ),
           Container(
             color: Colors.grey.shade300,
             height: 68,
@@ -96,7 +147,8 @@ class _ConversationState extends State<Conversation> {
                             key: conversationKey,
                             child: TextFormField(
                               decoration: InputDecoration(
-                                  hintText: "Type A Message",
+//                                  hintText: "Type A Message",
+                                  hintText: "${widget.name},${widget.user}",
                                   border: InputBorder.none),
                               validator: (val) {
                                 if (val.isEmpty) {
@@ -108,25 +160,23 @@ class _ConversationState extends State<Conversation> {
                           ),
                         ),
                         Padding(
-                          padding: EdgeInsets.all(4.0),
-                          child: InkWell(
-                            onTap: () {},
-                            child: CircleAvatar(
-                              backgroundColor: Color(0x00000000),
-                              foregroundColor: Colors.grey.shade600,
-                              child: Icon(Icons.attachment),
+                          padding: EdgeInsets.fromLTRB(4, 4, 0, 4),
+                          child: IconButton(
+                            icon: Icon(
+                              Icons.attachment,
+                              color: Colors.grey.shade600,
                             ),
+                            onPressed: pickImage,
                           ),
                         ),
                         Padding(
-                          padding: EdgeInsets.all(4.0),
-                          child: InkWell(
-                            onTap: () {},
-                            child: CircleAvatar(
-                              backgroundColor: Color(0x00000000),
-                              foregroundColor: Colors.grey.shade600,
-                              child: Icon(Icons.camera_alt),
+                          padding: EdgeInsets.fromLTRB(0, 4, 4, 4),
+                          child: IconButton(
+                            icon: Icon(
+                              Icons.camera_alt,
+                              color: Colors.grey.shade600,
                             ),
+                            onPressed: getImage,
                           ),
                         ),
                       ],
@@ -154,26 +204,6 @@ class _ConversationState extends State<Conversation> {
       ),
     );
   }
-
-  void insertConversationModel() {
-    final FormState formState = conversationKey.currentState;
-    if (formState.validate()) {
-      formState.save();
-      formState.reset();
-      conversationModel.time = DateTime.now().millisecondsSinceEpoch.toString();
-      conversationModel.to = "${widget.name}";
-      conversationModel.from = "${widget.user}";
-      ConversationService conversationService =
-          ConversationService(conversationModel.toMap());
-      conversationService.addConversation();
-    }
-  }
-
-  void childAdded(Event event) {
-    setState(() {
-      conversationList.add(ConversationModel.fromSnapshot(event.snapshot));
-    });
-  }
 }
 
 Widget receiveChat(String thread, String time) {
@@ -181,7 +211,7 @@ Widget receiveChat(String thread, String time) {
     children: <Widget>[
       Container(
         height: 64,
-        width: thread.length * 10.ceilToDouble()+70,
+        width: thread.length * 10.ceilToDouble() + 70,
         margin: EdgeInsets.fromLTRB(10, 10, 10, 0),
         padding: EdgeInsets.all(12),
         decoration: BoxDecoration(
@@ -227,7 +257,7 @@ Widget sendChat(String thread, String time) {
       ),
       Container(
         height: 64,
-        width: thread.length * 10.ceilToDouble()+70,
+        width: thread.length * 10.ceilToDouble() + 70,
         margin: EdgeInsets.fromLTRB(10, 10, 10, 0),
         padding: EdgeInsets.all(12),
         decoration: BoxDecoration(
